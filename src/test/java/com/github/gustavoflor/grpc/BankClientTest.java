@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,13 +59,17 @@ class BankClientTest {
     }
 
     @Test
-    void testWithdraw() {
+    void testWithdraw() throws InterruptedException {
         final var request = WithdrawRequest.newBuilder()
-            .setAccountNumber(7)
+            .setAccountNumber(11)
             .setAmount(40)
             .build();
+        final var countDownLatch = new CountDownLatch(1);
+        final var streamObserver = new MoneyStreamObserver(countDownLatch);
 
-        bankServiceStub.withdraw(request, new MoneyStreamObserver());
+        bankServiceStub.withdraw(request, streamObserver);
+        countDownLatch.await();
+        assertEquals(request.getAmount(), streamObserver.getReceived());
     }
 
 }
