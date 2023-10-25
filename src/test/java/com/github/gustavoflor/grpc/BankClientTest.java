@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BankClientTest {
 
-    private BankServiceGrpc.BankServiceBlockingStub blockingStub;
+    private BankServiceGrpc.BankServiceBlockingStub bankServiceBlockingStub;
+    private BankServiceGrpc.BankServiceStub bankServiceStub;
 
     @BeforeAll
     public void setUp() {
@@ -22,22 +23,38 @@ class BankClientTest {
             .usePlaintext()
             .build();
 
-        blockingStub = BankServiceGrpc.newBlockingStub(managedChannel);
+        bankServiceBlockingStub = BankServiceGrpc.newBlockingStub(managedChannel);
+        bankServiceStub = BankServiceGrpc.newStub(managedChannel);
     }
 
     @Test
-    void testGetBalance() {
+    void testBlockingGetBalance() {
         List.of(1L, 6L, 11L, 45L).forEach(accountNumber -> {
             final var expectedValue = 10.0 * accountNumber;
             final var request = BalanceCheckRequest.newBuilder()
                 .setAccountNumber(accountNumber)
                 .build();
 
-            final var balance = blockingStub.getBalance(request);
+            final var balance = bankServiceBlockingStub.getBalance(request);
 
             assertEquals(Currency.USD, balance.getCurrency());
             assertEquals(expectedValue, balance.getValue());
         });
+    }
+
+    @Test
+    void testBlockingWithdraw() {
+        final var request = WithdrawRequest.newBuilder()
+            .setAccountNumber(7)
+            .setAmount(40)
+            .build();
+
+        final var responses = new AtomicInteger();
+        bankServiceBlockingStub.withdraw(request).forEachRemaining(money -> {
+            responses.getAndIncrement();
+            assertEquals(10, money.getValue());
+        });
+        assertEquals(request.getAmount() / 10, responses.get());
     }
 
     @Test
@@ -47,12 +64,7 @@ class BankClientTest {
             .setAmount(40)
             .build();
 
-        final var responses = new AtomicInteger();
-        blockingStub.withdraw(request).forEachRemaining(money -> {
-            responses.getAndIncrement();
-            assertEquals(10, money.getValue());
-        });
-        assertEquals(request.getAmount() / 10, responses.get());
+        bankServiceStub.withdraw(request, new MoneyStreamObserver());
     }
 
 }
