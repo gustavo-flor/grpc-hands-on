@@ -1,6 +1,6 @@
-package com.github.gustavoflor.grpc.unary.repository;
+package com.github.gustavoflor.grpc.repository;
 
-import com.github.gustavoflor.grpc.unary.protobuf.Balance;
+import com.github.gustavoflor.grpc.protobuf.Balance;
 
 import java.util.Map;
 import java.util.Optional;

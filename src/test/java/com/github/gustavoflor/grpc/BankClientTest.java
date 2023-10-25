@@ -1,4 +1,4 @@
-package com.github.gustavoflor.grpc.unary;
+package com.github.gustavoflor.grpc;
 
 import com.github.gustavoflor.grpc.unary.protobuf.BalanceCheckRequest;
 import com.github.gustavoflor.grpc.unary.protobuf.BankServiceGrpc;

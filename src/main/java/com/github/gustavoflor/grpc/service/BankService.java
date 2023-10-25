@@ -1,9 +1,9 @@
-package com.github.gustavoflor.grpc.unary.service;
+package com.github.gustavoflor.grpc.service;
 
-import com.github.gustavoflor.grpc.unary.protobuf.Balance;
-import com.github.gustavoflor.grpc.unary.protobuf.BalanceCheckRequest;
-import com.github.gustavoflor.grpc.unary.protobuf.BankServiceGrpc;
-import com.github.gustavoflor.grpc.unary.repository.BalanceRepository;
+import com.github.gustavoflor.grpc.protobuf.Balance;
+import com.github.gustavoflor.grpc.protobuf.BalanceCheckRequest;
+import com.github.gustavoflor.grpc.protobuf.BankServiceGrpc;
+import com.github.gustavoflor.grpc.repository.BalanceRepository;
 import io.grpc.stub.StreamObserver;
 
 public class BankService extends BankServiceGrpc.BankServiceImplBase {

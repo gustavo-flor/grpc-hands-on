@@ -1,6 +1,6 @@
-package com.github.gustavoflor.grpc.unary;
+package com.github.gustavoflor.grpc;
 
-import com.github.gustavoflor.grpc.unary.service.BankService;
+import com.github.gustavoflor.grpc.service.BankService;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
