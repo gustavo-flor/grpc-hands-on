@@ -1,5 +1,7 @@
 package com.github.gustavoflor.grpc;
 
+import com.github.gustavoflor.grpc.observer.BalanceStreamObserver;
+import com.github.gustavoflor.grpc.observer.MoneyStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
 import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BankClientTest {
@@ -70,6 +73,28 @@ class BankClientTest {
         bankServiceStub.withdraw(request, streamObserver);
         countDownLatch.await();
         assertEquals(request.getAmount(), streamObserver.getReceived());
+    }
+
+    @Test
+    void testDeposit() throws InterruptedException {
+        final var countDownLatch = new CountDownLatch(1);
+        final var balanceStreamObserver = new BalanceStreamObserver(countDownLatch);
+
+        final var depositStreamObserver = bankServiceStub.deposit(balanceStreamObserver);
+
+        for (int i = 0; i < 5; i++) {
+            final var request = DepositRequest.newBuilder()
+                .setAmount(10)
+                .setAccountNumber(2)
+                .build();
+            depositStreamObserver.onNext(request);
+        }
+        depositStreamObserver.onCompleted();
+
+        countDownLatch.await();
+        final var balance = balanceStreamObserver.getBalance();
+        assertNotNull(balance);
+        assertEquals(70, balance.getValue());
     }
 
 }

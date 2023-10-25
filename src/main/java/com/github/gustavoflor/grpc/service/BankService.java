@@ -1,5 +1,6 @@
 package com.github.gustavoflor.grpc.service;
 
+import com.github.gustavoflor.grpc.observer.DepositStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
 import com.github.gustavoflor.grpc.repository.BalanceRepository;
 import io.grpc.Status;
@@ -51,6 +52,11 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public StreamObserver<DepositRequest> deposit(StreamObserver<Balance> responseObserver) {
+        return new DepositStreamObserver(balanceRepository, responseObserver);
+    }
+
     private void setTimeout(long millis) {
         try {
             Thread.sleep(millis);
@@ -58,4 +64,5 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
             throw new RuntimeException(e);
         }
     }
+
 }

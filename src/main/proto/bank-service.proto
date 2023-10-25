@@ -26,6 +26,11 @@ message Money {
   double value = 1;
 }
 
+message DepositRequest {
+  int64 account_number = 1;
+  double amount = 2;
+}
+
 service BankService {
 
   // Unary
@@ -33,5 +38,8 @@ service BankService {
 
   // Server-side streaming
   rpc withdraw(WithdrawRequest) returns (stream Money);
+
+  // Client-side streaming
+  rpc deposit(stream DepositRequest) returns (Balance);
 
 }

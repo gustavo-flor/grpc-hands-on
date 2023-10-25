@@ -1,4 +1,4 @@
-package com.github.gustavoflor.grpc;
+package com.github.gustavoflor.grpc.observer;
 
 import com.github.gustavoflor.grpc.protobuf.Money;
 import io.grpc.stub.StreamObserver;

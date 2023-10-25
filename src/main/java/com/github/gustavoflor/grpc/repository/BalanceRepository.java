@@ -4,7 +4,6 @@ import com.github.gustavoflor.grpc.protobuf.Balance;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class BalanceRepository {
 
@@ -18,12 +17,16 @@ public class BalanceRepository {
         return balance;
     }
 
-    public void debit(long accountNumber, double value) {
+    public void credit(long accountNumber, double value) {
         final var balance = findBalanceByAccountNumber(accountNumber);
         final var newBalance = Balance.newBuilder()
-            .setValue(balance.getValue() - value)
+            .setValue(balance.getValue() + value)
             .build();
         BALANCES.put(accountNumber, newBalance);
+    }
+
+    public void debit(long accountNumber, double value) {
+        credit(accountNumber, value * -1);
     }
 
     private Balance register(long accountNumber) {
