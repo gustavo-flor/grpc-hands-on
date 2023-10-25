@@ -2,6 +2,7 @@ package com.github.gustavoflor.grpc.service;
 
 import com.github.gustavoflor.grpc.protobuf.*;
 import com.github.gustavoflor.grpc.repository.BalanceRepository;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 public class BankService extends BankServiceGrpc.BankServiceImplBase {
@@ -22,6 +23,21 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     public void withdraw(WithdrawRequest request, StreamObserver<Money> responseObserver) {
         final var accountNumber = request.getAccountNumber();
         final var amount = request.getAmount();
+        final var balance = balanceRepository.findBalanceByAccountNumber(accountNumber);
+
+        if (amount < 10 || amount % 10 != 0) {
+            final var message = "Invalid input, amount must be a multiple of 10 and greater than 10";
+            final var status = Status.INVALID_ARGUMENT.withDescription(message);
+            responseObserver.onError(status.asException());
+            return;
+        }
+
+        if (balance.getValue() < amount) {
+            final var message = String.format("Insufficient balance. You have only %s %s.", balance.getValue(), balance.getCurrency());
+            final var status = Status.FAILED_PRECONDITION.withDescription(message);
+            responseObserver.onError(status.asException());
+            return;
+        }
 
         for (int index = 0; index < amount / 10; index++) {
             final var money = Money.newBuilder()

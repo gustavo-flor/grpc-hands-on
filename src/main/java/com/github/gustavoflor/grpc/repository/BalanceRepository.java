@@ -10,14 +10,10 @@ public class BalanceRepository {
 
     private static final Map<Long, Balance> BALANCES = new HashMap<>();
 
-    public Balance findBalanceByAccountNumber(long accountNumber) {
-        return findBalanceByAccountNumber(accountNumber, () -> register(accountNumber));
-    }
-
-    private Balance findBalanceByAccountNumber(final long accountNumber, final Supplier<Balance> orElse) {
+    public Balance findBalanceByAccountNumber(final long accountNumber) {
         final var balance = BALANCES.get(accountNumber);
         if (balance == null) {
-            return orElse.get();
+            return register(accountNumber);
         }
         return balance;
     }
