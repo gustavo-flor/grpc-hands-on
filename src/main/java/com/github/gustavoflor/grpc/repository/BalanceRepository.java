@@ -2,20 +2,40 @@ package com.github.gustavoflor.grpc.repository;
 
 import com.github.gustavoflor.grpc.protobuf.Balance;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 public class BalanceRepository {
 
-    private static final Map<Long, Balance> BALANCES = Map.of(
-        1L, Balance.newBuilder().setValue(100.00).build(),
-        6L, Balance.newBuilder().setValue(37.50).build(),
-        11L, Balance.newBuilder().setValue(0.57).build(),
-        45L, Balance.newBuilder().setValue(0.00).build()
-    );
+    private static final Map<Long, Balance> BALANCES = new HashMap<>();
 
-    public Optional<Balance> findBalanceByAccountNumber(long accountNumber) {
-        return Optional.ofNullable(BALANCES.get(accountNumber));
+    public Balance findBalanceByAccountNumber(long accountNumber) {
+        return findBalanceByAccountNumber(accountNumber, () -> register(accountNumber));
+    }
+
+    private Balance findBalanceByAccountNumber(final long accountNumber, final Supplier<Balance> orElse) {
+        final var balance = BALANCES.get(accountNumber);
+        if (balance == null) {
+            return orElse.get();
+        }
+        return balance;
+    }
+
+    public void debit(long accountNumber, double value) {
+        final var balance = findBalanceByAccountNumber(accountNumber);
+        final var newBalance = Balance.newBuilder()
+            .setValue(balance.getValue() - value)
+            .build();
+        BALANCES.put(accountNumber, newBalance);
+    }
+
+    private Balance register(long accountNumber) {
+        final var balance = Balance.newBuilder()
+            .setValue(accountNumber * 10.0)
+            .build();
+        BALANCES.put(accountNumber, balance);
+        return balance;
     }
 
 }

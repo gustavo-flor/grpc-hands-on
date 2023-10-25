@@ -29,6 +29,7 @@ class BankClientTest {
     @Test
     void test() {
         List.of(1L, 6L, 11L, 45L).forEach(accountNumber -> {
+            final var expectedValue = 10.0 * accountNumber;
             final var request = BalanceCheckRequest.newBuilder()
                 .setAccountNumber(accountNumber)
                 .build();
@@ -36,7 +37,7 @@ class BankClientTest {
             final var balance = blockingStub.getBalance(request);
 
             assertEquals(Currency.USD, balance.getCurrency());
-            System.out.println(balance);
+            assertEquals(expectedValue, balance.getValue());
         });
     }
 

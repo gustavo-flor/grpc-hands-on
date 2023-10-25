@@ -17,6 +17,21 @@ enum Currency {
   BRL = 1;
 }
 
+message WithdrawRequest {
+  int64 account_number = 1;
+  int64 amount = 2;
+}
+
+message Money {
+  double value = 1;
+}
+
 service BankService {
+
+  // Unary
   rpc getBalance(BalanceCheckRequest) returns (Balance);
+
+  // Server-side streaming
+  rpc withdraw(WithdrawRequest) returns (stream Money);
+
 }
