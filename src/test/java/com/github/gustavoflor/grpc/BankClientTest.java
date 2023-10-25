@@ -1,8 +1,8 @@
 package com.github.gustavoflor.grpc;
 
-import com.github.gustavoflor.grpc.unary.protobuf.BalanceCheckRequest;
-import com.github.gustavoflor.grpc.unary.protobuf.BankServiceGrpc;
-import com.github.gustavoflor.grpc.unary.protobuf.Currency;
+import com.github.gustavoflor.grpc.protobuf.BalanceCheckRequest;
+import com.github.gustavoflor.grpc.protobuf.BankServiceGrpc;
+import com.github.gustavoflor.grpc.protobuf.Currency;
 import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.TestInstance;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BankClientTest {
