@@ -8,7 +8,11 @@ import io.grpc.stub.StreamObserver;
 
 public class BankService extends BankServiceGrpc.BankServiceImplBase {
 
-    private final BalanceRepository balanceRepository = new BalanceRepository();
+    private final BalanceRepository balanceRepository;
+
+    public BankService(BalanceRepository balanceRepository) {
+        this.balanceRepository = balanceRepository;
+    }
 
     @Override
     public void getBalance(BalanceCheckRequest request, StreamObserver<Balance> responseObserver) {

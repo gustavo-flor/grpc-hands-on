@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.gustavoflor.grpc.protobuf";
+
+message TransferRequest {
+  int64 sender_account_number = 1;
+  int64 receiver_account_number = 2;
+  double amount = 3;
+}
+
+message Account {
+  int64 number = 1;
+  double balance = 2;
+}
+
+enum TransferStatus {
+  FAILED = 0;
+  SUCCESS = 1;
+}
+
+message TransferResponse {
+  TransferStatus status = 1;
+  repeated Account accounts = 2;
+}
+
+service TransferService {
+
+  // Bi-directional streaming
+  rpc transfer(stream TransferRequest) returns (stream TransferResponse);
+
+}
