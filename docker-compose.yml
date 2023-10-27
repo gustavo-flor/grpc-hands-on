@@ -1,0 +1,25 @@
+version: "3"
+services:
+  bank-service-1:
+    image: bank-service
+    restart: unless-stopped
+    build: ./
+    command:
+      - "-Dserver.port=9090"
+      - "-jar app.jar "
+  bank-service-2:
+    image: bank-service
+    restart: unless-stopped
+    build: ./
+    command:
+      - "-Dserver.port=9090"
+      - "-jar app.jar"
+    depends_on:
+      - bank-service-1
+  nginx:
+    image: nginx:1.25.3-alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "8585:8585"
