@@ -9,7 +9,7 @@
 - Run docker compose
 
 ```shell
-$ docker-compose up -d
+docker-compose up -d
 ```
 
 - Get proto files on `src/main/proto`
