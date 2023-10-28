@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.github.gustavoflor.grpc.util.MetadataUtil.getMetadata;
+import static com.github.gustavoflor.grpc.util.MetadataUtil.getBasicAuthorization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -26,9 +26,10 @@ class BankClientTest {
 
     @BeforeAll
     public void setUp() {
+        final var metadata = getBasicAuthorization("user:pass");
         final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
             .intercept(new DeadlineInterceptor())
-            .intercept(MetadataUtils.newAttachHeadersInterceptor(getMetadata()))
+            .intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
             .usePlaintext()
             .build();
 

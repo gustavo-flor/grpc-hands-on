@@ -1,18 +1,17 @@
 package com.github.gustavoflor.grpc;
 
+import com.github.gustavoflor.grpc.auth.BasicCallCredentials;
 import com.github.gustavoflor.grpc.observer.TransferResponseStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.TransferRequest;
 import com.github.gustavoflor.grpc.protobuf.TransferServiceGrpc;
 import com.github.gustavoflor.grpc.protobuf.TransferStatus;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.MetadataUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.github.gustavoflor.grpc.util.MetadataUtil.getMetadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -23,7 +22,6 @@ class TransferClientTest {
     @BeforeAll
     public void setUp() {
         final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
-            .intercept(MetadataUtils.newAttachHeadersInterceptor(getMetadata()))
             .usePlaintext()
             .build();
 
@@ -34,8 +32,10 @@ class TransferClientTest {
     void testTransfer() throws InterruptedException {
         final var countDownLatch = new CountDownLatch(1);
         final var responseObserver = new TransferResponseStreamObserver(countDownLatch);
+        final var callCredentials = new BasicCallCredentials();
 
-        final var requestObserver = transferServiceStub.transfer(responseObserver);
+        final var requestObserver = transferServiceStub.withCallCredentials(callCredentials)
+            .transfer(responseObserver);
 
         for (int i = 0; i < 4; i++) {
             final var transferRequest = TransferRequest.newBuilder()
