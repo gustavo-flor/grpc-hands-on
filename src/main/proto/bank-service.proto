@@ -31,6 +31,18 @@ message DepositRequest {
   double amount = 2;
 }
 
+enum ErrorStatus {
+  UNKNOWN = 0;
+  INSUFFICIENT_BALANCE = 1;
+  ONLY_TEN_MULTIPLES = 2;
+  AMOUNT_SHOULD_BE_POSITIVE = 3;
+}
+
+message WithdrawError {
+  ErrorStatus status = 1;
+  Balance balance = 2;
+}
+
 service BankService {
 
   // Unary
