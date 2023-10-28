@@ -4,8 +4,10 @@ import com.github.gustavoflor.grpc.interceptor.DeadlineInterceptor;
 import com.github.gustavoflor.grpc.observer.BalanceStreamObserver;
 import com.github.gustavoflor.grpc.observer.MoneyStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
+import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.MetadataUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,20 +23,26 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BankClientTest {
 
+    private ManagedChannel managedChannel;
     private BankServiceGrpc.BankServiceBlockingStub bankServiceBlockingStub;
     private BankServiceGrpc.BankServiceStub bankServiceStub;
 
     @BeforeAll
     public void setUp() {
         final var metadata = getBasicAuthorization("user:pass");
-        final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
+
+        managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
             .intercept(new DeadlineInterceptor())
             .intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
             .usePlaintext()
             .build();
-
         bankServiceBlockingStub = BankServiceGrpc.newBlockingStub(managedChannel);
         bankServiceStub = BankServiceGrpc.newStub(managedChannel);
+    }
+
+    @AfterAll
+    public void tearDown() {
+        managedChannel.shutdown();
     }
 
     @Test

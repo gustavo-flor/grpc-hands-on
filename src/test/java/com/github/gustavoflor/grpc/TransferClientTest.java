@@ -5,7 +5,9 @@ import com.github.gustavoflor.grpc.observer.TransferResponseStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.TransferRequest;
 import com.github.gustavoflor.grpc.protobuf.TransferServiceGrpc;
 import com.github.gustavoflor.grpc.protobuf.TransferStatus;
+import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,15 +19,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TransferClientTest {
 
+    private ManagedChannel managedChannel;
     private TransferServiceGrpc.TransferServiceStub transferServiceStub;
 
     @BeforeAll
     public void setUp() {
-        final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
+        managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
             .usePlaintext()
             .build();
-
         transferServiceStub = TransferServiceGrpc.newStub(managedChannel);
+    }
+
+    @AfterAll
+    public void tearDown() {
+        managedChannel.shutdown();
     }
 
     @Test
