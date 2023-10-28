@@ -12,7 +12,6 @@ public class AuthInterceptor implements ServerInterceptor {
         if (authorization == null || !authorization.equals("Basic user:pass")) {
             final var status = Status.UNAUTHENTICATED.withDescription("Invalid token");
             serverCall.close(status, metadata);
-            return new ServerCall.Listener<>() {};
         }
         return serverCallHandler.startCall(serverCall, metadata);
     }
