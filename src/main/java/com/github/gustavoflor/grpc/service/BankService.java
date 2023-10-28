@@ -3,8 +3,12 @@ package com.github.gustavoflor.grpc.service;
 import com.github.gustavoflor.grpc.observer.DepositStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
 import com.github.gustavoflor.grpc.repository.BalanceRepository;
+import io.grpc.Context;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class BankService extends BankServiceGrpc.BankServiceImplBase {
 
@@ -18,6 +22,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     public void getBalance(BalanceCheckRequest request, StreamObserver<Balance> responseObserver) {
         final var accountNumber = request.getAccountNumber();
         System.out.printf("Received request for %s.%n", accountNumber);
+        setTimeout(1000);
 
         final var balance = balanceRepository.findBalanceByAccountNumber(accountNumber);
 
@@ -46,12 +51,15 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         }
 
         for (int index = 0; index < amount / 10; index++) {
+            setTimeout(3000);
+            if (Context.current().isCancelled()) {
+                break;
+            }
             final var money = Money.newBuilder()
                 .setValue(10)
                 .build();
             balanceRepository.debit(accountNumber, money.getValue());
             responseObserver.onNext(money);
-            setTimeout(1000);
         }
 
         responseObserver.onCompleted();
@@ -63,11 +71,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     }
 
     private void setTimeout(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        sleepUninterruptibly(millis, MILLISECONDS);
     }
 
 }

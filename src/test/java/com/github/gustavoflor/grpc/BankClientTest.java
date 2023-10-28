@@ -1,5 +1,6 @@
 package com.github.gustavoflor.grpc;
 
+import com.github.gustavoflor.grpc.interceptor.DeadlineInterceptor;
 import com.github.gustavoflor.grpc.observer.BalanceStreamObserver;
 import com.github.gustavoflor.grpc.observer.MoneyStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
@@ -24,6 +25,7 @@ class BankClientTest {
     @BeforeAll
     public void setUp() {
         final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
+            .intercept(new DeadlineInterceptor())
             .usePlaintext()
             .build();
 
