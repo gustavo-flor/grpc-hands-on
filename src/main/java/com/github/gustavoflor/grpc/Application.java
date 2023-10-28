@@ -23,6 +23,11 @@ public class Application {
         server.start();
         System.out.printf("gRPC server is running at port %s.%n", PORT);
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("gRPC server is shutting down!");
+            server.shutdown();
+        }));
+
         server.awaitTermination();
     }
 
