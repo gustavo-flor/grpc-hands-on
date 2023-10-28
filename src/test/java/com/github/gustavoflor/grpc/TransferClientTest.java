@@ -5,12 +5,14 @@ import com.github.gustavoflor.grpc.protobuf.TransferRequest;
 import com.github.gustavoflor.grpc.protobuf.TransferServiceGrpc;
 import com.github.gustavoflor.grpc.protobuf.TransferStatus;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.MetadataUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.concurrent.CountDownLatch;
 
+import static com.github.gustavoflor.grpc.util.MetadataUtil.getMetadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -21,6 +23,7 @@ class TransferClientTest {
     @BeforeAll
     public void setUp() {
         final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
+            .intercept(MetadataUtils.newAttachHeadersInterceptor(getMetadata()))
             .usePlaintext()
             .build();
 

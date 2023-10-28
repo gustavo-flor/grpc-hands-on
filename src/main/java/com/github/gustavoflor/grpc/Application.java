@@ -1,5 +1,6 @@
 package com.github.gustavoflor.grpc;
 
+import com.github.gustavoflor.grpc.interceptor.AuthInterceptor;
 import com.github.gustavoflor.grpc.repository.BalanceRepository;
 import com.github.gustavoflor.grpc.service.BankService;
 import com.github.gustavoflor.grpc.service.TransferService;
@@ -14,6 +15,7 @@ public class Application {
     public static void main(String[] args) throws IOException, InterruptedException {
         final var balanceRepository = new BalanceRepository();
         final var server = ServerBuilder.forPort(PORT)
+            .intercept(new AuthInterceptor())
             .addService(new BankService(balanceRepository))
             .addService(new TransferService(balanceRepository))
             .build();

@@ -5,6 +5,7 @@ import com.github.gustavoflor.grpc.observer.BalanceStreamObserver;
 import com.github.gustavoflor.grpc.observer.MoneyStreamObserver;
 import com.github.gustavoflor.grpc.protobuf.*;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.MetadataUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.github.gustavoflor.grpc.util.MetadataUtil.getMetadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -26,6 +28,7 @@ class BankClientTest {
     public void setUp() {
         final var managedChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
             .intercept(new DeadlineInterceptor())
+            .intercept(MetadataUtils.newAttachHeadersInterceptor(getMetadata()))
             .usePlaintext()
             .build();
 
