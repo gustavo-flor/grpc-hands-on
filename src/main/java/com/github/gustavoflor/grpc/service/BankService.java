@@ -7,6 +7,7 @@ import io.grpc.Context;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
+import static com.github.gustavoflor.grpc.util.ContextUtil.USER_ID_KEY;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -21,7 +22,8 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     @Override
     public void getBalance(BalanceCheckRequest request, StreamObserver<Balance> responseObserver) {
         final var accountNumber = request.getAccountNumber();
-        System.out.printf("Received request for %s.%n", accountNumber);
+        final var userId = USER_ID_KEY.get();
+        System.out.printf("Received request for %s by %s.%n", accountNumber, userId);
         setTimeout(1000);
 
         final var balance = balanceRepository.findBalanceByAccountNumber(accountNumber);
